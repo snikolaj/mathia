@@ -4,7 +4,7 @@ float a = 0;
 float x_start = 200;
 float y_start = 200;
 
-final float maxDist = 300;
+final float maxDist = 3000;
 
 class Rectangle{
   float cx;
@@ -57,18 +57,25 @@ void draw(){
     rect(rects[i].cx, rects[i].cy, rects[i].h, rects[i].w);
   }
   
-  for(a = 0; a < PI / 2; a += (PI / 2) / 180){
+  for(a = 0; a < PI / 2; a += (PI / 2) / width){
     float dist = maxDist;
     
     
     for(int i = 0; i < rectNum; i++){
       float tempDist = lineIntersects(x_start, y_start, x_start + maxDist * cos(a + r), y_start + maxDist * sin(a + r), rects[i]);
       if(dist > tempDist){
-        dist = tempDist;
+        dist = tempDist * cos(a - PI/4); // https://stackoverflow.com/questions/66591163/how-do-i-fix-the-warped-perspective-in-my-raycaster
       }
     }
     
     line(x_start, y_start, x_start + dist * cos(a + r), y_start + dist * sin(a + r));
+    if(dist != maxDist){
+      stroke(dist);
+      line(a * (width) / (PI / 2), 
+          (height - (height * (1 - dist / maxDist))), 
+          a * (width) / (PI / 2), 
+          (height * (1 - dist / maxDist)));
+    }
   }
 }
 
@@ -138,15 +145,11 @@ void keyPressed(){
       r -= 0.1f;
     }
     if(key == 's'){
-      y_start += 10;
+      x_start -= 10*cos(r + PI/4);
+      y_start -= 10*sin(r + PI/4);
     }
     if(key == 'w'){
-      y_start -= 10;
-    }   
-    if(key == 'd'){
-      x_start += 10;
-    }
-    if(key == 'a'){
-      x_start -= 10;
+      x_start += 10*cos(r + PI/4);
+      y_start += 10*sin(r + PI/4);
     }   
 }
